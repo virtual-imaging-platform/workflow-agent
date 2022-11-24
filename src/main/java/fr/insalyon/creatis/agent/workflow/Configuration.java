@@ -25,8 +25,8 @@ public class Configuration {
             this.h2DBPort = config.getInt("db.h2.port", 9092);
             config.setProperty("db.h2.server", this.h2DBServer);
             config.setProperty("db.h2.port", this.h2DBPort);
-        } catch (ConfigurationException var2) {
-            logger.error(var2);
+        } catch (ConfigurationException e) {
+            logger.error("error getting configuration", e);
         }
 
     }

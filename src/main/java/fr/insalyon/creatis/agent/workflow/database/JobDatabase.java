@@ -33,8 +33,8 @@ public class JobDatabase {
             }
 
             return jobIds;
-        } catch (SQLException var4) {
-            logger.error(var4);
+        } catch (SQLException e) {
+            logger.error("Error getting job ids", e);
             return null;
         }
     }
@@ -46,8 +46,8 @@ public class JobDatabase {
             ps.setString(2, jobId);
             ps.executeUpdate();
             ps.close();
-        } catch (SQLException var3) {
-            logger.error(var3);
+        } catch (SQLException e) {
+            logger.error("Error updating status for job " + jobId, e);
         }
 
     }
@@ -57,10 +57,8 @@ public class JobDatabase {
             Class.forName("org.h2.Driver");
             this.connection = DriverManager.getConnection("jdbc:h2:tcp://" + Configuration.getInstance().getH2DBServer() + ":" + Configuration.getInstance().getH2DBPort() + "/" + this.workflowsPath + "/" + this.workflowId + "/db/jobs;MVCC=TRUE", "gasw", "gasw");
             this.connection.setAutoCommit(true);
-        } catch (ClassNotFoundException var2) {
-            logger.error(var2);
-        } catch (SQLException var3) {
-            logger.error(var3);
+        } catch (ClassNotFoundException | SQLException e) {
+            logger.error("error connecting to h2 database", e);
         }
 
     }
@@ -68,8 +66,8 @@ public class JobDatabase {
     public void close() {
         try {
             this.connection.close();
-        } catch (SQLException var2) {
-            logger.error(var2);
+        } catch (SQLException e) {
+            logger.error("Error closing h2 connection ", e);
         }
 
     }

@@ -16,11 +16,8 @@ public class KillCommand implements Command {
 
     public void run() {
         List<String> jobIds = this.jobDB.getJobIds();
-        Iterator i$ = jobIds.iterator();
 
-        while(i$.hasNext()) {
-            String id = (String)i$.next();
-
+        for (String id : jobIds) {
             try {
                 logger.info("Killing job id '" + id + "'");
                 String exec = "dirac-wms-job-kill " + id;
@@ -31,10 +28,8 @@ public class KillCommand implements Command {
                 } else {
                     this.jobDB.updateStatus(id);
                 }
-            } catch (InterruptedException var6) {
-                logger.error(var6);
-            } catch (IOException var7) {
-                logger.error(var7);
+            } catch (InterruptedException | IOException e) {
+                logger.error("Error killing job " + id, e);
             }
         }
 
