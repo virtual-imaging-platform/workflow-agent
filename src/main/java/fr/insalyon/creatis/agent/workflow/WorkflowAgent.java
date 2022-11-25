@@ -23,7 +23,7 @@ public class WorkflowAgent {
         String workflowId = args[2];
         JobDatabase db = new JobDatabase(workflowsPath, workflowId);
         Command command = null;
-        if (cmd.toLowerCase().equals("kill")) {
+        if (cmd.equalsIgnoreCase("kill")) {
             logger.info("Received kill signal to '" + workflowId + "'");
             command = new KillCommand(db);
         }

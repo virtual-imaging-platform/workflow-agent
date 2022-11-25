@@ -7,7 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 public class JobDatabase {
@@ -22,27 +25,36 @@ public class JobDatabase {
         this.connect();
     }
 
-    public List<String> getJobIds() {
+    public Map<String,String> getJobsToKill() {
         try {
-            PreparedStatement ps = this.connection.prepareStatement("SELECT id FROM Jobs WHERE status='SUCCESSFULLY_SUBMITTED' OR status='QUEUED' OR status='RUNNING'");
+            PreparedStatement ps = this.connection.prepareStatement("SELECT id, status FROM Jobs WHERE status='SUCCESSFULLY_SUBMITTED' OR status='QUEUED' OR status='RUNNING'");
             ResultSet rs = ps.executeQuery();
-            ArrayList jobIds = new ArrayList();
+            Map<String,String> jobs = new HashMap<>();
 
             while(rs.next()) {
-                jobIds.add(rs.getString("id"));
+                jobs.put(rs.getString("id"),rs.getString("status"));
             }
 
-            return jobIds;
+            return jobs;
         } catch (SQLException e) {
             logger.error("Error getting job ids", e);
             return null;
         }
     }
 
-    public void updateStatus(String jobId) {
+
+    public void updateStatusToCancelled(String jobId) {
+        updateStatus(jobId, "CANCELLED");
+    }
+
+    public void updateStatusToDeleted(String jobId) {
+        updateStatus(jobId, "DELETED");
+    }
+
+    public void updateStatus(String jobId, String status) {
         try {
             PreparedStatement ps = this.connection.prepareStatement("UPDATE Jobs SET status = ? WHERE id = ?");
-            ps.setString(1, "CANCELLED");
+            ps.setString(1, status);
             ps.setString(2, jobId);
             ps.executeUpdate();
             ps.close();
